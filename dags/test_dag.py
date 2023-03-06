@@ -1,17 +1,21 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator
 from datetime import datetime
+from airflow.operators.python import PythonOperator
 
 
 def get_my_library():
-    import smartc_lib
-    print(f'My lib with wersion {smartc_lib}')
+    from smartc_lib.meetings.preprocessor import meetings_preprocessor
+    print(f'My lib function {meetings_preprocessor}')
 
 
 def get_pandas():
     import pandas
     print(f'Pandas with wersion {pandas.__version__}')
 
+
+def get_openpyxl():
+    import openpyxl
+    print(f'Pandas with wersion {openpyxl.__version__}')
 
 
 with DAG(
@@ -32,4 +36,9 @@ with DAG(
         python_callable=get_pandas
     )
 
-    get_my_library >>  get_pandas
+    get_openpyxl = PythonOperator(
+        task_id = 'get_openpyxl',
+        python_callable=get_openpyxl
+    )
+
+    get_my_library >> get_pandas >> get_openpyxl
